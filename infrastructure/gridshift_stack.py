@@ -197,3 +197,28 @@ class GridShiftStack(Stack):
                 },
             )
         )
+
+        # --------------------------------------------------
+        # 8. EVENTBRIDGE SCHEDULER EXECUTION ROLE
+        # --------------------------------------------------
+
+        self.scheduler_role = iam.Role(
+            self,
+            "GridShiftSchedulerRole",
+            role_name="gridshift-scheduler-role",
+            assumed_by=iam.ServicePrincipal(
+                "scheduler.amazonaws.com"
+            ),
+        )
+
+        # EventBridge Scheduler may invoke only our dispatcher.
+        self.scheduler_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "lambda:InvokeFunction",
+                ],
+                resources=[
+                    self.dispatcher.function_arn,
+                ],
+            )
+        )
