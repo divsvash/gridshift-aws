@@ -264,6 +264,7 @@ class GridShiftStack(Stack):
             value=self.task_definition.task_definition_arn,
         )
 
+
         # --------------------------------------------------
         # 10. BACKEND SCHEDULING PERMISSIONS
         # --------------------------------------------------
@@ -307,4 +308,14 @@ class GridShiftStack(Stack):
                     },
                 ),
             ],
+        )
+
+        # --------------------------------------------------
+        # 11. BACKEND POLICY OUTPUT
+        # --------------------------------------------------
+
+        CfnOutput(
+            self,
+            "BackendSchedulerPolicyArn",
+            value=self.backend_scheduler_policy.managed_policy_arn,
         )
