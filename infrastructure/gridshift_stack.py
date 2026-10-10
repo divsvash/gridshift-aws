@@ -40,17 +40,23 @@ class GridShiftStack(Stack):
         # Temporary VPC configuration for offline synthesis.
         # Replace these IDs with real AWS resource IDs
         # before deployment.
-        vpc = ec2.Vpc.from_vpc_attributes(
+
+
+        # --------------------------------------------------
+        # 1. NETWORKING
+        # --------------------------------------------------
+
+        vpc = ec2.Vpc(
             self,
             "GridShiftVpc",
-            vpc_id="vpc-PLACEHOLDER",
-            availability_zones=[
-                "ap-south-1a",
-                "ap-south-1b",
-            ],
-            public_subnet_ids=[
-                "subnet-PLACEHOLDER-A",
-                "subnet-PLACEHOLDER-B",
+            max_azs=2,
+            nat_gateways=0,
+            subnet_configuration=[
+                ec2.SubnetConfiguration(
+                    name="Public",
+                    subnet_type=ec2.SubnetType.PUBLIC,
+                    cidr_mask=24,
+                )
             ],
         )
 
@@ -73,6 +79,11 @@ class GridShiftStack(Stack):
             cluster_name="gridshift-cluster",
         )
 
+
+        # --------------------------------------------------
+        # 3. CLOUDWATCH LOGGING
+        # --------------------------------------------------
+
         # --------------------------------------------------
         # 3. CLOUDWATCH LOGGING
         # --------------------------------------------------
@@ -84,6 +95,7 @@ class GridShiftStack(Stack):
             retention=logs.RetentionDays.ONE_WEEK,
             removal_policy=RemovalPolicy.DESTROY,
         )
+
 
         # --------------------------------------------------
         # 4. FARGATE TASK DEFINITION
