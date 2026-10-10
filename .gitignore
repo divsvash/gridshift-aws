@@ -1,0 +1,52 @@
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Python packaging
+*.egg-info/
+build/
+dist/
+
+# Testing and linting
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.basedpyright/
+
+# AWS CDK generated output
+cdk.out/
+cdk.context.json
+
+# AWS credentials and local secrets
+.env
+.env.*
+!.env.example
+.aws/
+*.pem
+*.key
+
+# Local configuration
+.vscode/
+.zed/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# Docker local overrides
+docker-compose.override.yml
