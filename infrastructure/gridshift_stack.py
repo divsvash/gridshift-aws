@@ -1,7 +1,7 @@
-
 from pathlib import Path
 
 from aws_cdk import (
+    CfnOutput,
     Duration,
     RemovalPolicy,
     Stack,
@@ -221,4 +221,78 @@ class GridShiftStack(Stack):
                     self.dispatcher.function_arn,
                 ],
             )
+        )
+
+
+        # --------------------------------------------------
+        # 9. STACK OUTPUTS
+        # --------------------------------------------------
+
+        CfnOutput(
+            self,
+            "DispatcherLambdaArn",
+            value=self.dispatcher.function_arn,
+        )
+
+        CfnOutput(
+            self,
+            "SchedulerRoleArn",
+            value=self.scheduler_role.role_arn,
+        )
+
+        CfnOutput(
+            self,
+            "EcsClusterArn",
+            value=self.cluster.cluster_arn,
+        )
+
+        CfnOutput(
+            self,
+            "EcsTaskDefinitionArn",
+            value=self.task_definition.task_definition_arn,
+        )
+
+        # --------------------------------------------------
+        # 10. BACKEND SCHEDULING PERMISSIONS
+        # --------------------------------------------------
+
+        # This policy can be attached to the backend's
+        # AWS execution role during integration.
+        self.backend_scheduler_policy = iam.ManagedPolicy(
+            self,
+            "GridShiftBackendSchedulerPolicy",
+            managed_policy_name="gridshift-backend-scheduler",
+            description=(
+                "Allows the GridShift backend to create "
+                "one-time EventBridge schedules"
+            ),
+            statements=[
+                iam.PolicyStatement(
+                    actions=[
+                        "scheduler:CreateSchedule",
+                    ],
+                    resources=[
+                        self.format_arn(
+                            service="scheduler",
+                            resource="schedule",
+                            resource_name="default/gridshift-*",
+                        )
+                    ],
+                ),
+                iam.PolicyStatement(
+                    actions=[
+                        "iam:PassRole",
+                    ],
+                    resources=[
+                        self.scheduler_role.role_arn,
+                    ],
+                    conditions={
+                        "StringEquals": {
+                            "iam:PassedToService": (
+                                "scheduler.amazonaws.com"
+                            )
+                        }
+                    },
+                ),
+            ],
         )
